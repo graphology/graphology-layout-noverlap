@@ -52,7 +52,8 @@
   "eslintConfig": {
     "extends": "@yomguithereal/eslint-config",
     "globals": {
-      "Float32Array": true
+      "Float32Array": true,
+      "Set": true
     }
   },
   "dependencies": {

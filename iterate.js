@@ -119,7 +119,7 @@ module.exports = function iterate(options, NodeMatrix) {
   // Computing collisions
   var cell;
 
-  var collisions = {};
+  var collisions = new Set();
 
   var n1, n2, x1, x2, y1, y2, s1, s2, h;
 
@@ -139,11 +139,11 @@ module.exports = function iterate(options, NodeMatrix) {
         n2 = cell[j];
         h = hashPair(n1, n2);
 
-        if (gridLength > 1 && h in collisions)
+        if (gridLength > 1 && collisions.has(h))
           continue;
 
         if (gridLength > 1)
-          collisions[h] = true;
+          collisions.add(h);
 
         x2 = NodeMatrix[n2 + NODE_X];
         y2 = NodeMatrix[n2 + NODE_Y];

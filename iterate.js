@@ -40,7 +40,7 @@ module.exports = function iterate(options, NodeMatrix) {
   // Caching options
   var margin = options.margin;
   var ratio = options.ratio;
-  var permittedExpansion = options.permittedExpansion;
+  var expansion = options.expansion;
   var gridSize = options.gridSize; // TODO: decrease grid size when few nodes?
   var speed = options.speed;
 
@@ -76,10 +76,10 @@ module.exports = function iterate(options, NodeMatrix) {
   var xCenter = (xMin + xMax) / 2;
   var yCenter = (yMin + yMax) / 2;
 
-  xMin = xCenter - permittedExpansion * width / 2;
-  xMax = xCenter + permittedExpansion * width / 2;
-  yMin = yCenter - permittedExpansion * height / 2;
-  yMax = yCenter + permittedExpansion * height / 2;
+  xMin = xCenter - expansion * width / 2;
+  xMax = xCenter + expansion * width / 2;
+  yMin = yCenter - expansion * height / 2;
+  yMax = yCenter + expansion * height / 2;
 
   // Building grid
   var grid = new Array(gridSize * gridSize),

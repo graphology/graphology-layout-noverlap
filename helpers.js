@@ -26,9 +26,9 @@ exports.validateSettings = function(settings) {
       typeof settings.margin !== 'number' || settings.margin < 0)
     return {message: 'the `margin` setting should be 0 or a positive number.'};
 
-  if ('permittedExpansion' in settings &&
-      typeof settings.permittedExpansion !== 'number' || settings.permittedExpansion <= 0)
-    return {message: 'the `permittedExpansion` setting should be a positive number.'};
+  if ('expansion' in settings &&
+      typeof settings.expansion !== 'number' || settings.expansion <= 0)
+    return {message: 'the `expansion` setting should be a positive number.'};
 
   if ('ratio' in settings &&
       typeof settings.ratio !== 'number' || settings.ratio <= 0)

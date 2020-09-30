@@ -3,12 +3,12 @@ import Graph from 'graphology-types';
 type LayoutMapping = {[key: string]: {x: number, y: number}};
 
 type NoverlapNodeAttributes = {x: number, y: number, size?: number};
-type NoverlapNodeReducer = (key: string, attr: NoverlapNodeAttributes) => NoverlapNodeAttributes;
+export type NoverlapNodeReducer = (key: string, attr: NoverlapNodeAttributes) => NoverlapNodeAttributes;
 
 export type NoverlapSettings = {
   gridSize?: number,
   margin?: number,
-  permittedExpansion?: number,
+  expansion?: number,
   ratio?: number,
   speed?: number
 };

@@ -26,7 +26,7 @@ Each node's starting position must be set before running the Noverlap anti-colli
 
 * **gridSize** *?number* [`20`]: number of grid cells horizontally and vertically subdivising the graph's space. This is used as an optimization scheme. Set it to `1` and you will have `O(n²)` time complexity, which can sometimes perform better with very few nodes.
 * **margin** *?number* [`5`]: margin to keep between nodes.
-* **permittedExpansion** *?number* [`1.1`]: percentage of current space that nodes could attempt to move outside of.
+* **expansion** *?number* [`1.1`]: percentage of current space that nodes could attempt to move outside of.
 * **ratio** *?number* [`1.0`]: ratio scaling node sizes.
 * **speed** *?number* [`3`]: dampening factor that will slow down node movements to ease the overall process.
 

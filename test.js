@@ -215,8 +215,8 @@ describe('graphology-layout-forceatlas2', function() {
 
       assert.deepEqual(result, {
         John: {x: 0, y: 1},
-        Mary: {x: 22, y: 1},
-        Lala: {x: -6.6738128662109375, y: -17.44805335998535}
+        Mary: {x: 19, y: 1},
+        Lala: {x: -6.163533687591553, y: -16.03751564025879}
       });
     });
   });

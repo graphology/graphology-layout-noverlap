@@ -135,10 +135,11 @@ module.exports = function iterate(options, NodeMatrix) {
         n2 = cell[j];
         h = hashPair(n1, n2);
 
-        if (h in collisions)
+        if (gridLength > 1 && h in collisions)
           continue;
 
-        collisions[h] = true;
+        if (gridLength > 1)
+          collisions[h] = true;
 
         x2 = NodeMatrix[n2 + NODE_X];
         y2 = NodeMatrix[n2 + NODE_Y];

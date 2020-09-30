@@ -4,6 +4,8 @@
 
 JavaScript implementation of the Noverlap anti-collision layout algorithm for [graphology](https://graphology.github.io).
 
+Note that this algorithm is iterative and might not converge easily in some cases.
+
 ## Installation
 
 ```
@@ -15,37 +17,29 @@ npm install graphology-layout-noverlap
 * [Pre-requisite](#pre-requisite)
 * [Settings](#settings)
 * [Synchronous layout](#synchronous-layout)
-* [Webworker](#webworker)
 
 ### Pre-requisites
 
-Each node's starting position must be set before running ForceAtlas 2 layout. Two attributes called `x` and `y` must therefore be defined for all the graph nodes. [graphology-layout](https://github.com/graphology/graphology-layout) can be used to initialize these attributes to a [random](https://github.com/graphology/graphology-layout#random) or [circular](https://github.com/graphology/graphology-layout#circular) layout, if needed.
-
-Note also that the algorithm has an edge-case where the layout cannot be computed if all of your nodes starts with `x=0` and `y=0`.
+Each node's starting position must be set before running the Noverlap anti-collision layout. Two attributes called `x` and `y` must therefore be defined for all the graph nodes.
 
 ### Settings
 
-* **adjustSizes** *?boolean* [`false`]: should the node's sizes be taken into account?
-* **barnesHutOptimize** *?boolean* [`false`]: whether to use the Barnes-Hut approximation to compute repulsion in `O(n*log(n))` rather than default `O(n^2)`, `n` being the number of nodes.
-* **barnesHutTheta** *?number* [`0.5`]: Barnes-Hut approximation theta parameter.
-* **edgeWeightInfluence** *?number* [`0`]: influence of the edge's weights on the layout.
-* **gravity** *?number* [`1`]: strength of the layout's gravity.
-* **linLogMode** *?boolean* [`false`]: whether to use Noack's LinLog model.
-* **outboundAttractionDistribution** *?boolean* [`false`]
-* **scalingRatio** *?number* [`1`]
-* **slowDown** *?number* [`1`]
-* **strongGravityMode** *?boolean* [`false`]
+* **gridSize** *?number* [`20`]: number of grid cells horizontally and vertically subdivising the graph's space. This is used as an optimization scheme. Set it to `1` and you will have `O(n²)` time complexity, which can sometimes perform better with very few nodes.
+* **margin** *?number* [`5`]: margin to keep between nodes.
+* **permittedExpansion** *?number* [`1.1`]: percentage of current space that nodes could attempt to move outside of.
+* **ratio** *?number* [`1.0`]: ratio scaling node sizes.
+* **speed** *?number* [`3`]: dampening factor that will slow down node movements to ease the overall process.
 
 ### Synchronous layout
 
 ```js
 import noverlap from 'graphology-layout-noverlap';
 
-const positions = noverlap(graph, {iterations: 50});
+const positions = noverlap(graph, {maxIterations: 50});
 
 // With settings:
 const positions = noverlap(graph, {
-  iterations: 50,
+  maxIterations: 50,
   settings: {
     gravity: 10
   }
@@ -59,26 +53,5 @@ noverlap.assign(graph);
 
 * **graph** *Graph*: target graph.
 * **options** *object*: options:
-  - **iterations** *number*: number of iterations to perform.
+  - **maxIterations** *number*: maximum number of iterations to perform before stopping.
   - **settings** *?object*: the layout's settings (see [#settings](#settings)).
-
-### Webworker
-
-If you need to run the layout's computation in a web worker, the library comes with a utility to do so:
-
-*Example*
-
-```js
-import FA2Layout from 'graphology-layout-noverlap/worker';
-
-const layout = new FA2Layout(graph);
-
-// To start the layout
-layout.start({settings: {gravity: 1}});
-
-// To stop the layout
-layout.stop();
-
-// To kill the layout and release attached memory
-layout.kill();
-```

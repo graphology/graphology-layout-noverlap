@@ -17,6 +17,7 @@ npm install graphology-layout-noverlap
 * [Pre-requisite](#pre-requisite)
 * [Settings](#settings)
 * [Synchronous layout](#synchronous-layout)
+* [Webworker](#webworker)
 
 ### Pre-requisites
 
@@ -63,3 +64,24 @@ noverlap.assign(graph);
   - **inputReducer** *?function*: a function reducing each node attributes. This can be useful if the rendered positions/sizes of your graph are stored outside of the graph's data. This is the case when using sigma.js for instance.
   - **outputReducer** *?function*: a function reducing node positions as computed by the layout algorithm. This can be useful to map back to a previous coordinates system. This is the case when using sigma.js for instance.
   - **settings** *?object*: the layout's settings (see [#settings](#settings)).
+
+### Webworker
+
+If you need to run the layout's computation in a web worker, the library comes with a utility to do so:
+
+*Example*
+
+```js
+import NoverlapLayout from 'graphology-layout-forceatlas2/worker';
+
+const layout = new NoverlapLayout(graph);
+
+// To start the layout. It will automatically stop when converged
+layout.start({settings: {margin: 1}});
+
+// To stop the layout
+layout.stop();
+
+// To kill the layout and release attached memory
+layout.kill();
+```

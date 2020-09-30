@@ -82,7 +82,7 @@ describe('graphology-layout-forceatlas2', function() {
         for (var node in data)
           graph.addNode(node, data[node]);
 
-        var matrix = helpers.graphToByteArray(graph, function(node, attr) {
+        var matrix = helpers.graphToByteArray(graph, function(_, attr) {
           return {
             x: attr.x * 10,
             y: attr.y * 100,
@@ -202,6 +202,22 @@ describe('graphology-layout-forceatlas2', function() {
       assert.throws(function() {
         layout(new Graph(), {settings: {speed: -10}});
       }, /speed/);
+    });
+
+    it('should work properly.', function() {
+      var graph = new Graph();
+
+      graph.addNode('John', {x: 0, y: 1, size: 4});
+      graph.addNode('Mary', {x: 1, y: 1, size: 5});
+      graph.addNode('Lala', {x: 0.5, y: 0.5, size: 3});
+
+      var result = layout(graph);
+
+      assert.deepEqual(result, {
+        John: {x: 0, y: 1},
+        Mary: {x: 22, y: 1},
+        Lala: {x: -6.6738128662109375, y: -17.44805335998535}
+      });
     });
   });
 });

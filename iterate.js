@@ -37,23 +37,26 @@ module.exports = function iterate(options, NodeMatrix) {
   var margin = options.margin;
   var ratio = options.ratio;
   var permittedExpansion = options.permittedExpansion;
-  var gridSize = options.gridSize;
+  var gridSize = options.gridSize; // TODO: decrease grid size when few nodes?
+  var speed = options.speed;
 
   // Generic iteration variables
-  var i, x, y, size;
+  var i, j, x, y, l, size;
   var converged = true;
 
-  var l = NodeMatrix.length;
-  var order = (l / PPN) | 0;
+  var length = NodeMatrix.length;
+  var order = (length / PPN) | 0;
 
   var deltaX = new Float32Array(order);
   var deltaY = new Float32Array(order);
 
   // Finding the extents of our space
-  var xMin = yMin = Infinity;
-  var xMax = yMax = -Infinity;
+  var xMin = Infinity;
+  var yMin = Infinity;
+  var xMax = -Infinity;
+  var yMax = -Infinity;
 
-  for (i = 0; i < l; i += PPN) {
+  for (i = 0; i < length; i += PPN) {
     x = NodeMatrix[i + NODE_X];
     y = NodeMatrix[i + NODE_Y];
     size = NodeMatrix[i + NODE_SIZE] * ratio + margin;
@@ -61,7 +64,7 @@ module.exports = function iterate(options, NodeMatrix) {
     xMin = Math.min(xMin, x - size);
     xMax = Math.max(xMax, x + size);
     yMin = Math.min(yMin, y - size);
-    yMax = Math.min(yMax, y + size);
+    yMax = Math.max(yMax, y + size);
   }
 
   var width = xMax - xMin;
@@ -75,17 +78,19 @@ module.exports = function iterate(options, NodeMatrix) {
   yMax = yCenter + permittedExpansion * height / 2;
 
   // Building grid
-  var grid = new Array(gridSize * gridSize);
+  var grid = new Array(gridSize * gridSize),
+      gridLength = grid.length,
+      c;
 
-  for (i = 0; i < grid.length; i++)
-    grid[i] = [];
+  for (c = 0; c < gridLength; c++)
+    grid[c] = [];
 
   var nxMin, nxMax, nyMin, nyMax;
   var xMinBox, xMaxBox, yMinBox, yMaxBox;
 
   var col, row;
 
-  for (i = 0; i < l; i += PPN) {
+  for (i = 0; i < length; i += PPN) {
     x = NodeMatrix[i + NODE_X];
     y = NodeMatrix[i + NODE_Y];
     size = NodeMatrix[i + NODE_SIZE] * ratio + margin;
@@ -95,19 +100,81 @@ module.exports = function iterate(options, NodeMatrix) {
     nyMin = y - size;
     nyMax = y + size;
 
-    xMinBox = Math.floor(gridSize * (nxMin - xmin) / (xmax - xmin));
-    xMaxBox = Math.floor(gridSize * (nxMax - xmin) / (xmax - xmin));
-    yMinBox = Math.floor(gridSize * (nyMin - ymin) / (ymax - ymin));
-    yMaxBox = Math.floor(gridSize * (nyMax - ymin) / (ymax - ymin));
+    xMinBox = Math.floor(gridSize * (nxMin - xMin) / (xMax - xMin));
+    xMaxBox = Math.floor(gridSize * (nxMax - xMin) / (xMax - xMin));
+    yMinBox = Math.floor(gridSize * (nyMin - yMin) / (yMax - yMin));
+    yMaxBox = Math.floor(gridSize * (nyMax - yMin) / (yMax - yMin));
 
-    for(col = xMinBox; col <= xMaxBox; col++) {
-      for(row = yMinBox; row <= yMaxBox; row++) {
+    for (col = xMinBox; col <= xMaxBox; col++) {
+      for (row = yMinBox; row <= yMaxBox; row++) {
         grid[col * gridSize + row].push(i);
       }
     }
   }
 
-  console.log(grid);
+  // Computing collisions
+  var cell;
+
+  var collisions = {};
+
+  var n1, n2, x1, x2, y1, y2, s1, s2, h;
+
+  var xDist, yDist, dist, collision;
+
+  for (c = 0; c < gridLength; c++) {
+    cell = grid[c];
+
+    for (i = 0, l = cell.length; i < l; i++) {
+      n1 = cell[i];
+
+      x1 = NodeMatrix[n1 + NODE_X];
+      y1 = NodeMatrix[n1 + NODE_Y];
+      s1 = NodeMatrix[n1 + NODE_SIZE];
+
+      for (j = i + 1; j < l; j++) {
+        n2 = cell[j];
+        h = hashPair(n1, n2);
+
+        if (h in collisions)
+          continue;
+
+        collisions[h] = true;
+
+        x2 = NodeMatrix[n2 + NODE_X];
+        y2 = NodeMatrix[n2 + NODE_Y];
+        s2 = NodeMatrix[n2 + NODE_SIZE];
+
+        xDist = x2 - x1;
+        yDist = y2 - y1;
+        dist = Math.sqrt(xDist * xDist + yDist * yDist);
+        collision = dist < (
+          (s1 * ratio + margin) +
+          (s2 * ratio + margin)
+        );
+
+        if (collision) {
+          converged = false;
+
+          n2 = (n2 / PPN) | 0;
+
+          if (dist > 0) {
+            deltaX[n2] += xDist / dist * (1 + s1);
+            deltaY[n2] += yDist / dist * (1 + s1);
+          }
+          else {
+            // Nodes are on the exact same spot, we need to jitter a bit
+            deltaX[n2] += width * 0.01 * (0.5 - Math.random());
+            deltaY[n2] += height * 0.01 * (0.5 - Math.random());
+          }
+        }
+      }
+    }
+  }
+
+  for (i = 0, j = 0; i < length; i += PPN, j++) {
+    NodeMatrix[i + NODE_X] += deltaX[j] * 0.1 * speed;
+    NodeMatrix[i + NODE_Y] += deltaY[j] * 0.1 * speed;
+  }
 
   return {converged: converged};
 };

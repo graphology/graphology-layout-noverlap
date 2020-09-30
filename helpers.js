@@ -94,7 +94,7 @@ exports.assignLayoutChanges = function(graph, NodeMatrix) {
  */
 exports.collectLayoutChanges = function(graph, NodeMatrix) {
   var nodes = graph.nodes(),
-      positions = Object.create(null);
+      positions = {};
 
   for (var i = 0, j = 0, l = NodeMatrix.length; i < l; i += PPN) {
     positions[nodes[j]] = {

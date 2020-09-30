@@ -27,6 +27,8 @@ function abstractSynchronousLayout(assign, graph, params) {
 
   if (typeof params === 'number')
     params = {maxIterations: params};
+  else
+    params = params || {};
 
   var maxIterations = params.maxIterations || DEFAULT_MAX_ITERATIONS;
 
@@ -49,7 +51,7 @@ function abstractSynchronousLayout(assign, graph, params) {
       i;
 
   // Iterating
-  for (i = 0; i < maxIterations && converged; i++)
+  for (i = 0; i < maxIterations && !converged; i++)
     converged = iterate(settings, matrix).converged;
 
   // Applying

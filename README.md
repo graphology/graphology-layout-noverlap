@@ -45,9 +45,10 @@ const positions = noverlap(graph, {
   }
 });
 
-// With a custom node reducer
+// With a custom input reducer
 const positions = noverlap(graph, {
-  reducer: (key, attr) => ({x: pos[key].x, y: pos[key].y, size: attr.size})
+  inputReducer: (key, attr) => ({x: store[key].x, y: store[key].y, size: attr.size}),
+  outputReducer: (key, pos) => ({x: pos.x * 10, y: pos.y * 10})
 });
 
 // To directly assign the positions to the nodes:
@@ -59,5 +60,6 @@ noverlap.assign(graph);
 * **graph** *Graph*: target graph.
 * **options** *object*: options:
   - **maxIterations** *?number* [`500`]: maximum number of iterations to perform before stopping. Note that the algorithm will also stop as soon as converged.
-  - **reducer** *?function*: a function reducing each node attributes. This can be useful if the rendered positions/sizes of your graph are stored outside of the graph's data. This is the case when using sigma.js for instance.
+  - **inputReducer** *?function*: a function reducing each node attributes. This can be useful if the rendered positions/sizes of your graph are stored outside of the graph's data. This is the case when using sigma.js for instance.
+  - **outputReducer** *?function*: a function reducing node positions as computed by the layout algorithm. This can be useful to map back to a previous coordinates system. This is the case when using sigma.js for instance.
   - **settings** *?object*: the layout's settings (see [#settings](#settings)).

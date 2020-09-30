@@ -46,7 +46,7 @@ function abstractSynchronousLayout(assign, graph, params) {
     throw new Error('graphology-layout-noverlap: ' + validationError.message);
 
   // Building matrices
-  var matrix = helpers.graphToByteArray(graph, params.reducer),
+  var matrix = helpers.graphToByteArray(graph, params.inputReducer),
       converged = false,
       i;
 
@@ -56,11 +56,11 @@ function abstractSynchronousLayout(assign, graph, params) {
 
   // Applying
   if (assign) {
-    helpers.assignLayoutChanges(graph, matrix);
+    helpers.assignLayoutChanges(graph, matrix, params.outputReducer);
     return;
   }
 
-  return helpers.collectLayoutChanges(graph, matrix);
+  return helpers.collectLayoutChanges(graph, matrix, params.outputReducer);
 }
 
 /**

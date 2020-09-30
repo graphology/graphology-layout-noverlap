@@ -68,21 +68,29 @@ exports.graphToByteArray = function(graph, reducer) {
   return matrix;
 };
 
-
 /**
  * Function applying the layout back to the graph.
  *
  * @param {Graph}        graph      - Target graph.
  * @param {Float32Array} NodeMatrix - Node matrix.
+ * @param {function}     reducer    - Reducing function.
  */
-exports.assignLayoutChanges = function(graph, NodeMatrix) {
-  var nodes = graph.nodes();
+exports.assignLayoutChanges = function(graph, NodeMatrix, reducer) {
+  var i = 0;
 
-  for (var i = 0, j = 0, l = NodeMatrix.length; i < l; i += PPN) {
-    graph.setNodeAttribute(nodes[j], 'x', NodeMatrix[i]);
-    graph.setNodeAttribute(nodes[j], 'y', NodeMatrix[i + 1]);
-    j++;
-  }
+  graph.forEachNode(function(node) {
+    var pos = {
+      x: NodeMatrix[i],
+      y: NodeMatrix[i + 1]
+    };
+
+    if (typeof reducer === 'function')
+      pos = reducer(node, pos);
+
+    graph.mergeNodeAttributes(node, pos);
+
+    i += PPN;
+  });
 };
 
 /**
@@ -90,20 +98,27 @@ exports.assignLayoutChanges = function(graph, NodeMatrix) {
  *
  * @param  {Graph}        graph      - Target graph.
  * @param  {Float32Array} NodeMatrix - Node matrix.
+ * @param  {function}     reducer    - Reducing function.
  * @return {object}                  - Map to node positions.
  */
-exports.collectLayoutChanges = function(graph, NodeMatrix) {
-  var nodes = graph.nodes(),
-      positions = {};
+exports.collectLayoutChanges = function(graph, NodeMatrix, reducer) {
+  var positions = {};
 
-  for (var i = 0, j = 0, l = NodeMatrix.length; i < l; i += PPN) {
-    positions[nodes[j]] = {
+  var i = 0;
+
+  graph.forEachNode(function(node) {
+    var pos = {
       x: NodeMatrix[i],
       y: NodeMatrix[i + 1]
     };
 
-    j++;
-  }
+    if (typeof reducer === 'function')
+      pos = reducer(node, pos);
+
+    positions[node] = pos;
+
+    i += PPN;
+  });
 
   return positions;
 };

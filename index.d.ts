@@ -15,7 +15,8 @@ export type NoverlapSettings = {
 
 export type NoverlapLayoutOptions = {
   maxIterations?: number,
-  reducer?: NoverlapNodeReducer,
+  inputReducer?: NoverlapNodeReducer,
+  outputReducer?: NoverlapNodeReducer,
   settings?: NoverlapSettings
 };
 

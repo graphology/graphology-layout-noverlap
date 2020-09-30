@@ -38,6 +38,8 @@ function NoverlapLayoutSupervisor(graph, params) {
   this.graph = graph;
   this.settings = settings;
   this.matrices = null;
+  this.maxIterations = params.maxIterations || 500;
+  this.reducer = params.reducer;
   this.running = false;
   this.killed = false;
 

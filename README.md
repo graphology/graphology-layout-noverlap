@@ -58,6 +58,6 @@ noverlap.assign(graph);
 
 * **graph** *Graph*: target graph.
 * **options** *object*: options:
-  - **maxIterations** *number*: maximum number of iterations to perform before stopping.
+  - **maxIterations** *?number* [`500`]: maximum number of iterations to perform before stopping. Note that the algorithm will also stop as soon as converged.
   - **reducer** *?function*: a function reducing each node attributes. This can be useful if the rendered positions/sizes of your graph are stored outside of the graph's data. This is the case when using sigma.js for instance.
   - **settings** *?object*: the layout's settings (see [#settings](#settings)).

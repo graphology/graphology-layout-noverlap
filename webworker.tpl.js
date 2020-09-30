@@ -5,8 +5,7 @@
  * Web worker able to run the layout in a separate thread.
  */
 module.exports = function worker() {
-  var NODES,
-      EDGES;
+  var NODES;
 
   var moduleShim = {};
 
@@ -21,18 +20,15 @@ module.exports = function worker() {
 
     NODES = new Float32Array(data.nodes);
 
-    if (data.edges)
-      EDGES = new Float32Array(data.edges);
-
     // Running the iteration
-    iterate(
+    var result = iterate(
       data.settings,
-      NODES,
-      EDGES
+      NODES
     );
 
     // Sending result to supervisor
     self.postMessage({
+      result: result,
       nodes: NODES.buffer
     }, [NODES.buffer]);
   });

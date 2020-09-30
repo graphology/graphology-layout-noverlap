@@ -1,12 +1,12 @@
 import Graph from 'graphology-types';
-import {ForceAtlas2Settings} from './index';
+import {NoverlapSettings} from './index';
 
-export type FA2LayoutSupervisorParameters = {
-  settings?: ForceAtlas2Settings
+export type NoverlapLayoutSupervisorParameters = {
+  settings?: NoverlapSettings
 };
 
-export default class FA2LayoutSupervisor {
-  constructor(graph: Graph, params?: FA2LayoutSupervisorParameters);
+export default class NoverlapLayoutSupervisor {
+  constructor(graph: Graph, params?: NoverlapLayoutSupervisorParameters);
 
   start(): void;
   stop(): void;

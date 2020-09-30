@@ -9,14 +9,15 @@ var isGraph = require('graphology-utils/is-graph'),
     helpers = require('./helpers.js');
 
 var DEFAULT_SETTINGS = require('./defaults.js');
+var DEFAULT_MAX_ITERATIONS = 500;
 
 /**
  * Asbtract function used to run a certain number of iterations.
  *
  * @param  {boolean}       assign       - Whether to assign positions.
  * @param  {Graph}         graph        - Target graph.
- * @param  {object|number} params       - If number, params.iterations, else:
- * @param  {number}          iterations - Number of iterations.
+ * @param  {object|number} params       - If number, params.maxIterations, else:
+ * @param  {number}          maxIterations - Maximum number of iterations.
  * @param  {object}          [settings] - Settings.
  * @return {object|undefined}
  */
@@ -25,56 +26,39 @@ function abstractSynchronousLayout(assign, graph, params) {
     throw new Error('graphology-layout-noverlap: the given graph is not a valid graphology instance.');
 
   if (typeof params === 'number')
-    params = {iterations: params};
+    params = {maxIterations: params};
 
-  var iterations = params.iterations;
+  var maxIterations = params.maxIterations || DEFAULT_MAX_ITERATIONS;
 
-  if (typeof iterations !== 'number')
-    throw new Error('graphology-layout-noverlap: invalid number of iterations.');
+  if (typeof maxIterations !== 'number')
+    throw new Error('graphology-layout-noverlap: invalid number of maximum iterations.');
 
-  if (iterations <= 0)
-    throw new Error('graphology-layout-noverlap: you should provide a positive number of iterations.');
+  if (maxIterations <= 0)
+    throw new Error('graphology-layout-noverlap: you should provide a positive number of maximum iterations.');
 
   // Validating settings
-  var settings = helpers.assign({}, DEFAULT_SETTINGS, params.settings),
+  var settings = Object.assign({}, DEFAULT_SETTINGS, params.settings),
       validationError = helpers.validateSettings(settings);
 
   if (validationError)
     throw new Error('graphology-layout-noverlap: ' + validationError.message);
 
   // Building matrices
-  var matrices = helpers.graphToByteArrays(graph),
+  var matrix = helpers.graphToByteArray(graph),
+      converged = false,
       i;
 
   // Iterating
-  for (i = 0; i < iterations; i++)
-    iterate(settings, matrices.nodes, matrices.edges);
+  for (i = 0; i < maxIterations && converged; i++)
+    converged = iterate(settings, matrix).converged;
 
   // Applying
   if (assign) {
-    helpers.assignLayoutChanges(graph, matrices.nodes);
+    helpers.assignLayoutChanges(graph, matrix);
     return;
   }
 
-  return helpers.collectLayoutChanges(graph, matrices.nodes);
-}
-
-/**
- * Function returning sane layout settings for the given graph.
- *
- * @param  {Graph}  graph - Target graph.
- * @return {object}
- */
-function inferSettings(graph) {
-  var order = graph.order;
-
-  return {
-    barnesHutOptimize: order > 2000,
-    strongGravityMode: true,
-    gravity: 0.05,
-    scalingRatio: 10,
-    slowDown: 1 + Math.log(order)
-  };
+  return helpers.collectLayoutChanges(graph, matrix);
 }
 
 /**
@@ -82,6 +66,5 @@ function inferSettings(graph) {
  */
 var synchronousLayout = abstractSynchronousLayout.bind(null, false);
 synchronousLayout.assign = abstractSynchronousLayout.bind(null, true);
-synchronousLayout.inferSettings = inferSettings;
 
 module.exports = synchronousLayout;

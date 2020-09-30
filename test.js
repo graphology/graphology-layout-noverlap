@@ -101,111 +101,107 @@ describe('graphology-layout-forceatlas2', function() {
       });
     });
 
-  //   describe('#.collectLayoutChanges', function() {
+    describe('#.collectLayoutChanges', function() {
 
-  //     it('should work as expected.', function() {
-  //       var graph = new Graph();
+      it('should work as expected.', function() {
+        var graph = new Graph();
 
-  //       var data = {
-  //         John: {
-  //           size: 4,
-  //           x: 3,
-  //           y: 4
-  //         },
-  //         Martha: {
-  //           x: 10,
-  //           y: 5
-  //         },
-  //         Ada: {
-  //           x: 23,
-  //           y: -2
-  //         }
-  //       };
+        var data = {
+          John: {
+            size: 4,
+            x: 3,
+            y: 4
+          },
+          Martha: {
+            x: 10,
+            y: 5
+          },
+          Ada: {
+            x: 23,
+            y: -2
+          }
+        };
 
-  //       for (var node in data)
-  //         graph.addNode(node, data[node]);
+        for (var node in data)
+          graph.addNode(node, data[node]);
 
-  //       var positions = helpers.collectLayoutChanges(graph, [
-  //         4, 5, 0, 0, 0, 0, 2, 1, 4, 0,
-  //         11, 6, 0, 0, 0, 0, 3, 1, 1, 0,
-  //         24, -1, 0, 0, 0, 0, 2, 1, 1, 0
-  //       ]);
+        var positions = helpers.collectLayoutChanges(graph, [
+          4, 5, 4,
+          11, 6, 1,
+          24, -1, 1
+        ]);
 
-  //       assert.deepEqual(positions, {
-  //         John: {x: 4, y: 5},
-  //         Martha: {x: 11, y: 6},
-  //         Ada: {x: 24, y: -1}
-  //       });
-  //     });
-  //   });
+        assert.deepEqual(positions, {
+          John: {x: 4, y: 5},
+          Martha: {x: 11, y: 6},
+          Ada: {x: 24, y: -1}
+        });
+      });
+    });
 
-  //   describe('#.assignLayoutChanges', function() {
+    describe('#.assignLayoutChanges', function() {
 
-  //     it('should work as expecte.', function() {
-  //       var graph = new Graph();
+      it('should work as expected.', function() {
+        var graph = new Graph();
 
-  //       var data = {
-  //         John: {
-  //           x: 3,
-  //           y: 4
-  //         },
-  //         Martha: {
-  //           x: 10,
-  //           y: 5
-  //         },
-  //         Ada: {
-  //           x: 23,
-  //           y: -2
-  //         }
-  //       };
+        var data = {
+          John: {
+            x: 3,
+            y: 4
+          },
+          Martha: {
+            x: 10,
+            y: 5
+          },
+          Ada: {
+            x: 23,
+            y: -2
+          }
+        };
 
-  //       for (var node in data)
-  //         graph.addNode(node, data[node]);
+        for (var node in data)
+          graph.addNode(node, data[node]);
 
-  //       helpers.assignLayoutChanges(graph, [
-  //         4, 5, 0, 0, 0, 0, 2, 1, 4, 0,
-  //         11, 6, 0, 0, 0, 0, 3, 1, 1, 0,
-  //         24, -1, 0, 0, 0, 0, 2, 1, 1, 0
-  //       ]);
+        helpers.assignLayoutChanges(graph, [
+          4, 5, 4,
+          11, 6, 1,
+          24, -1, 1
+        ]);
 
-  //       var positions = {
-  //         John: graph.getNodeAttributes('John'),
-  //         Martha: graph.getNodeAttributes('Martha'),
-  //         Ada: graph.getNodeAttributes('Ada')
-  //       };
+        var positions = {
+          John: graph.getNodeAttributes('John'),
+          Martha: graph.getNodeAttributes('Martha'),
+          Ada: graph.getNodeAttributes('Ada')
+        };
 
-  //       assert.deepEqual(positions, {
-  //         John: {x: 4, y: 5},
-  //         Martha: {x: 11, y: 6},
-  //         Ada: {x: 24, y: -1}
-  //       });
-  //     });
-  //   });
+        assert.deepEqual(positions, {
+          John: {x: 4, y: 5},
+          Martha: {x: 11, y: 6},
+          Ada: {x: 24, y: -1}
+        });
+      });
+    });
   });
 
-  // describe('synchronous', function() {
+  describe('synchronous', function() {
 
-  //   it('should throw if the graph is invalid.', function() {
-  //     assert.throws(function() {
-  //       layout(null);
-  //     }, /graphology/);
-  //   });
+    it('should throw if the graph is invalid.', function() {
+      assert.throws(function() {
+        layout(null);
+      }, /graphology/);
+    });
 
-  //   it('should throw if iterations are not valid.', function() {
-  //     assert.throws(function() {
-  //       layout(new Graph(), {});
-  //     }, /number/);
+    it('should throw if max iterations are not valid.', function() {
+      assert.throws(function() {
+        layout(new Graph(), -34);
+      }, /positive/);
+    });
 
-  //     assert.throws(function() {
-  //       layout(new Graph(), -34);
-  //     }, /positive/);
-  //   });
+    it('should throw if settings are invalid.', function() {
 
-  //   it('should throw if settings are invalid.', function() {
-
-  //     assert.throws(function() {
-  //       layout(new Graph(), {iterations: 5, settings: {linLogMode: 45}});
-  //     }, /linLogMode/);
-  //   });
-  // });
+      assert.throws(function() {
+        layout(new Graph(), {settings: {speed: -10}});
+      }, /speed/);
+    });
+  });
 });

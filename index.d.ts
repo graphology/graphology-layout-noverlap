@@ -2,34 +2,27 @@ import Graph from 'graphology-types';
 
 type LayoutMapping = {[key: string]: {x: number, y: number}};
 
-export type ForceAtlas2Settings = {
-  linLogMode?: boolean,
-  outboundAttractionDistribution?: boolean,
-  adjustSizes?: boolean,
-  edgeWeightInfluence?: number,
-  scalingRatio?: number,
-  strongGravityMode?: boolean,
-  gravity?: number,
-  slowDown?: number,
-  barnesHutOptimize?: boolean,
-  barnesHutTheta?: number
+export type NoverlapSettings = {
+  gridSize?: number,
+  margin?: number,
+  permittedExpansion?: number,
+  ratio?: number,
+  speed?: number
 };
 
-export type ForceAtlas2LayoutOptions = {
-  iterations: number,
-  settings?: ForceAtlas2Settings
+export type NoverlapLayoutOptions = {
+  maxIterations?: number,
+  settings?: NoverlapSettings
 };
 
-interface IForceAtlas2Layout {
+interface INoverlapLayout {
   (graph: Graph, iterations: number): LayoutMapping;
-  (graph: Graph, options: ForceAtlas2LayoutOptions): LayoutMapping;
+  (graph: Graph, options: NoverlapLayoutOptions): LayoutMapping;
 
   assign(graph: Graph, iterations: number): void;
-  assign(graph: Graph, options: ForceAtlas2LayoutOptions): void;
-
-  inferSettings(graph: Graph): ForceAtlas2Settings;
+  assign(graph: Graph, options: NoverlapLayoutOptions): void;
 }
 
-declare const forceAtlas2: IForceAtlas2Layout;
+declare const noverlap: INoverlapLayout;
 
-export default forceAtlas2;
+export default noverlap;

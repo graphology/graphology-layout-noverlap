@@ -1,6 +1,6 @@
 {
   "name": "graphology-layout-noverlap",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Noverlap anti-collision layout algorithm for graphology.",
   "main": "index.js",
   "files": [

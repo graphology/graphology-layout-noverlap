@@ -24,6 +24,10 @@ function hashPair(a, b) {
   return a + '§' + b;
 }
 
+function jitter() {
+  return 0.01 * (0.5 - Math.random());
+}
+
 /**
  * Function used to perform a single interation of the algorithm.
  *
@@ -164,8 +168,8 @@ module.exports = function iterate(options, NodeMatrix) {
           }
           else {
             // Nodes are on the exact same spot, we need to jitter a bit
-            deltaX[n2] += width * 0.01 * (0.5 - Math.random());
-            deltaY[n2] += height * 0.01 * (0.5 - Math.random());
+            deltaX[n2] += width * jitter();
+            deltaY[n2] += height * jitter();
           }
         }
       }

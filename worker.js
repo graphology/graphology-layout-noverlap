@@ -100,6 +100,8 @@ NoverlapLayoutSupervisor.prototype.handleMessage = function(event) {
   helpers.assignLayoutChanges(this.graph, matrix, this.outputReducer);
   this.matrices.nodes = matrix;
 
+  this.converged = event.data.result.converged;
+
   if (event.data.result.converged) {
     this.stop();
     return;

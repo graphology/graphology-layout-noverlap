@@ -8,6 +8,8 @@ export type NoverlapLayoutSupervisorParameters = {
 };
 
 export default class NoverlapLayoutSupervisor {
+  converged: boolean;
+
   constructor(graph: Graph, params?: NoverlapLayoutSupervisorParameters);
 
   start(): void;

@@ -1,7 +1,9 @@
 import Graph from 'graphology-types';
-import {NoverlapSettings} from './index';
+import {NoverlapSettings, NoverlapNodeReducer} from './index';
 
 export type NoverlapLayoutSupervisorParameters = {
+  inputReducer?: NoverlapNodeReducer,
+  outputReducer?: NoverlapNodeReducer,
   settings?: NoverlapSettings
 };
 

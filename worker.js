@@ -27,7 +27,7 @@ function NoverlapLayoutSupervisor(graph, params) {
     throw new Error('graphology-layout-noverlap/worker: the given graph is not a valid graphology instance.');
 
   // Validating settings
-  var settings = helpers.assign({}, DEFAULT_SETTINGS, params.settings),
+  var settings = Object.assign({}, DEFAULT_SETTINGS, params.settings),
       validationError = helpers.validateSettings(settings);
 
   if (validationError)
@@ -38,10 +38,12 @@ function NoverlapLayoutSupervisor(graph, params) {
   this.graph = graph;
   this.settings = settings;
   this.matrices = null;
-  this.maxIterations = params.maxIterations || 500;
-  this.reducer = params.reducer;
+  this.converged = false;
   this.running = false;
   this.killed = false;
+
+  this.inputReducer = params.inputReducer;
+  this.outputReducer = params.outputReducer;
 
   // Binding listeners
   this.handleMessage = this.handleMessage.bind(this);
@@ -95,8 +97,13 @@ NoverlapLayoutSupervisor.prototype.handleMessage = function(event) {
 
   var matrix = new Float32Array(event.data.nodes);
 
-  helpers.assignLayoutChanges(this.graph, matrix);
+  helpers.assignLayoutChanges(this.graph, matrix, this.outputReducer);
   this.matrices.nodes = matrix;
+
+  if (event.data.result.converged) {
+    this.stop();
+    return;
+  }
 
   // Looping
   this.askForIterations();
@@ -105,10 +112,9 @@ NoverlapLayoutSupervisor.prototype.handleMessage = function(event) {
 /**
  * Internal method used to ask for iterations from the worker.
  *
- * @param  {boolean} withEdges - Should we send edges along?
  * @return {NoverlapLayoutSupervisor}
  */
-NoverlapLayoutSupervisor.prototype.askForIterations = function(withEdges) {
+NoverlapLayoutSupervisor.prototype.askForIterations = function() {
   var matrices = this.matrices;
 
   var payload = {
@@ -117,11 +123,6 @@ NoverlapLayoutSupervisor.prototype.askForIterations = function(withEdges) {
   };
 
   var buffers = [matrices.nodes.buffer];
-
-  if (withEdges) {
-    payload.edges = matrices.edges.buffer;
-    buffers.push(matrices.edges.buffer);
-  }
 
   this.worker.postMessage(payload, buffers);
 
@@ -141,10 +142,12 @@ NoverlapLayoutSupervisor.prototype.start = function() {
     return this;
 
   // Building matrices
-  this.matrices = helpers.graphToByteArrays(this.graph);
+  this.matrices = {
+    nodes: helpers.graphToByteArray(this.graph, this.inputReducer)
+  };
 
   this.running = true;
-  this.askForIterations(true);
+  this.askForIterations();
 
   return this;
 };

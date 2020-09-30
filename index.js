@@ -46,7 +46,7 @@ function abstractSynchronousLayout(assign, graph, params) {
     throw new Error('graphology-layout-noverlap: ' + validationError.message);
 
   // Building matrices
-  var matrix = helpers.graphToByteArray(graph),
+  var matrix = helpers.graphToByteArray(graph, params.reducer),
       converged = false,
       i;
 

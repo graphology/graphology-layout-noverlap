@@ -219,5 +219,27 @@ describe('graphology-layout-forceatlas2', function() {
         Lala: {x: -6.163533687591553, y: -16.03751564025879}
       });
     });
+
+    it('should work properly with a reducer.', function() {
+      var graph = new Graph();
+
+      graph.addNode('John', {x: 0, y: 1, size: 4});
+      graph.addNode('Mary', {x: 1, y: 1, size: 5});
+      graph.addNode('Lala', {x: 0.5, y: 0.5, size: 3});
+
+      var result = layout(graph, {reducer: function(_, attr) {
+        return {
+          x: attr.x * 10,
+          y: attr.y * 10,
+          size: attr.size * 10
+        };
+      }});
+
+      assert.deepEqual(result, {
+        John: {x: 0, y: 10},
+        Mary: {x: 108.40000915527344, y: 10},
+        Lala: {x: -18.833003997802734, y: -74.81441497802734}
+      });
+    });
   });
 });

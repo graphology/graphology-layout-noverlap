@@ -45,6 +45,10 @@ function NoverlapLayoutSupervisor(graph, params) {
   this.inputReducer = params.inputReducer;
   this.outputReducer = params.outputReducer;
 
+  this.callbacks = {
+    onConverged: typeof params.onConverged === 'function' ? params.onConverged : null
+  };
+
   // Binding listeners
   this.handleMessage = this.handleMessage.bind(this);
 
@@ -103,6 +107,9 @@ NoverlapLayoutSupervisor.prototype.handleMessage = function(event) {
   this.converged = event.data.result.converged;
 
   if (event.data.result.converged) {
+    if (this.callbacks.onConverged)
+      this.callbacks.onConverged();
+
     this.stop();
     return;
   }

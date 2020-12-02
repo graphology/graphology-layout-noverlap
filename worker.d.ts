@@ -4,6 +4,7 @@ import {NoverlapSettings, NoverlapNodeReducer} from './index';
 export type NoverlapLayoutSupervisorParameters = {
   inputReducer?: NoverlapNodeReducer,
   outputReducer?: NoverlapNodeReducer,
+  onConverged?: () => void,
   settings?: NoverlapSettings
 };
 
